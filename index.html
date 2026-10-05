@@ -3,54 +3,117 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Alhambra 3D Walkthrough · Roadrunners Realty</title>
-  <meta name="description" content="Follow a tour guide through a 3D model of the Alhambra Palace in Granada, Spain.">
+  <title>Alhambra Virtual Tour · Roadrunners Realty</title>
+  <meta name="description" content="Click through the Alhambra Palace in Granada, Spain: an interactive floor-plan tour by Roadrunners Realty.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css">
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
-      }
-    }
-  </script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 32'%3E%3Cpath d='M2 30 L22 8 L32 18 L46 2 L70 30' fill='none' stroke='%234B3417' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
-  <canvas id="scene" aria-label="3D model of the Alhambra with a tour guide walking the route"></canvas>
-
-  <div id="loading" class="loading">
-    <svg width="72" height="32" viewBox="0 0 72 32" aria-hidden="true"><path d="M2 30 L22 8 L32 18 L46 2 L70 30" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
-    <p id="loading-text">Building the Alhambra…</p>
-  </div>
-
-  <header class="hud-top">
-    <a class="brand" href="../" title="Back to the 2D floor-plan tour">
-      <svg width="44" height="20" viewBox="0 0 72 32" aria-hidden="true"><path d="M2 30 L22 8 L32 18 L46 2 L70 30" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M22 8 L30 30 M46 2 L52 30" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+  <header class="topbar">
+    <a class="brand" href="#" data-go="intro" aria-label="Roadrunners Realty: back to start">
+      <svg width="54" height="24" viewBox="0 0 72 32" aria-hidden="true"><path d="M2 30 L22 8 L32 18 L46 2 L70 30" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M22 8 L30 30 M46 2 L52 30" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       <span>ROADRUNNERS</span>
     </a>
-    <ol class="stops" id="stops" aria-label="Tour stops"></ol>
+    <nav class="pill" aria-label="Tour progress">
+      <span>VIRTUAL TOUR</span>
+      <span class="progress" id="progress">6 stops</span>
+    </nav>
   </header>
 
-  <aside class="card" id="card" aria-live="polite">
-    <p class="eyebrow" id="card-eyebrow">3D WALKTHROUGH</p>
-    <h1 id="card-title">The Alhambra</h1>
-    <p class="sub" id="card-sub">Granada, Spain · Nasrid dynasty, 1238–1391</p>
-    <ul class="chips" id="card-look"></ul>
-    <p class="script" id="card-script">Press <b>Start tour</b> and our guide will walk you from the council hall to the summer gardens, stopping at six rooms.</p>
-    <div class="controls">
-      <button class="btn" id="btn-prev" title="Previous stop (←)">←</button>
-      <button class="btn primary" id="btn-main">Start tour</button>
-      <button class="btn" id="btn-next" title="Next stop (→)">→</button>
-      <button class="btn ghost" id="btn-cam" title="Drag to look around (C)">Free look</button>
-    </div>
-    <label class="auto"><input type="checkbox" id="auto" checked> Auto-continue after each stop</label>
-  </aside>
+  <main class="layout">
+    <section class="map-card" aria-labelledby="map-title">
+      <div class="map-head">
+        <h1 id="map-title">Alhambra Palace</h1>
+        <p>Click a numbered room to step inside, or follow the route in order. <a class="link3d" href="3d/">Walk it in 3D →</a></p>
+      </div>
 
-  <p class="hint" id="hint">Drag to look around · scroll to zoom</p>
+      <svg class="map" id="map" viewBox="0 0 960 560" role="group" aria-label="Floor plan of the Alhambra with six tour stops">
+        <defs>
+          <pattern id="tile" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M12 3 L21 12 L12 21 L3 12 Z" fill="none" stroke="#E2D6C2" stroke-width="1"/>
+          </pattern>
+          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#8A6A43"/>
+          </marker>
+        </defs>
 
-  <script type="module" src="main.js"></script>
+        <!-- context: hill, walls, ravine, non-tour buildings -->
+        <path class="hill" d="M30 330 C 40 200, 160 120, 330 70 C 470 30, 620 70, 690 150 C 720 190, 715 300, 690 360 C 640 470, 420 520, 230 500 C 110 488, 25 430, 30 330 Z"/>
+        <path class="wall" d="M48 330 C 58 214, 168 140, 332 92 C 470 54, 606 90, 670 160 C 698 196, 694 300, 672 350 C 626 452, 418 498, 236 480 C 124 468, 44 418, 48 330 Z"/>
+        <text class="ctx" x="96" y="380">ALCAZABA</text>
+        <text class="ctx small" x="96" y="402">fortress</text>
+        <g class="ctx-bldg">
+          <rect x="300" y="408" width="120" height="74" rx="6"/>
+          <circle cx="360" cy="445" r="22"/>
+        </g>
+        <text class="ctx small" x="300" y="502">Palace of Charles V</text>
+        <text class="ctx" x="560" y="440">MEDINA</text>
+        <path class="ravine" d="M735 40 C 720 200, 740 380, 725 540"/>
+        <text class="ctx small" x="748" y="530">ravine</text>
+        <path class="hill alt" d="M770 90 C 840 70, 930 100, 940 180 C 948 260, 920 340, 850 352 C 790 360, 760 300, 762 220 C 764 160, 760 110, 770 90 Z"/>
+        <text class="ctx small" x="800" y="380">Cerro del Sol</text>
+        <g class="compass" transform="translate(905 470)">
+          <circle r="26"/>
+          <path d="M0 -18 L7 4 L0 0 L-7 4 Z"/>
+          <text y="20">N</text>
+        </g>
+
+        <!-- route -->
+        <path id="route" class="route" d="M205 268 L 302 268 L 320 175 L 320 132 L 470 250 L 492 182 L 560 182 C 650 120, 720 120, 845 190" marker-end="url(#arrow)"/>
+
+        <!-- rooms (clickable) -->
+        <g class="room" data-stop="mexuar" tabindex="0" role="button" aria-label="Stop 1: Mexuar">
+          <rect x="150" y="232" width="110" height="72" rx="8"/>
+          <text class="room-name" x="205" y="324">Mexuar</text>
+        </g>
+        <g class="room" data-stop="myrtles" tabindex="0" role="button" aria-label="Stop 2: Court of the Myrtles">
+          <rect x="280" y="150" width="80" height="210" rx="8"/>
+          <rect class="pool" x="306" y="182" width="28" height="150" rx="4"/>
+          <text class="room-name" x="320" y="382">Court of the</text>
+          <text class="room-name" x="320" y="400">Myrtles</text>
+        </g>
+        <g class="room" data-stop="ambassadors" tabindex="0" role="button" aria-label="Stop 3: Hall of the Ambassadors">
+          <rect x="285" y="74" width="70" height="70" rx="6"/>
+          <text class="room-name start" x="366" y="102">Hall of the</text>
+          <text class="room-name start" x="366" y="120">Ambassadors</text>
+        </g>
+        <g class="room" data-stop="lions" tabindex="0" role="button" aria-label="Stop 4: Court of the Lions">
+          <rect x="392" y="216" width="200" height="112" rx="8"/>
+          <path class="pool" d="M410 272 H574 M492 230 V314" />
+          <circle class="fountain" cx="492" cy="272" r="13"/>
+          <text class="room-name" x="492" y="350">Court of the Lions</text>
+        </g>
+        <g class="room" data-stop="sisters" tabindex="0" role="button" aria-label="Stop 5: Hall of the Two Sisters">
+          <rect x="460" y="130" width="66" height="66" rx="6"/>
+          <path class="dome" d="M493 140 L 503 154 L 518 163 L 503 172 L 493 186 L 483 172 L 468 163 L 483 154 Z"/>
+          <text class="room-name start" x="536" y="150">Hall of the</text>
+          <text class="room-name start" x="536" y="168">Two Sisters</text>
+        </g>
+        <g class="room" data-stop="generalife" tabindex="0" role="button" aria-label="Stop 6: Generalife">
+          <rect x="790" y="150" width="120" height="120" rx="10"/>
+          <rect class="pool" x="800" y="206" width="100" height="10" rx="4"/>
+          <text class="room-name" x="850" y="296">Generalife</text>
+        </g>
+
+        <!-- number badges, drawn on top -->
+        <g id="badges"></g>
+      </svg>
+      <p class="map-note">Schematic floor plan, not to scale. North is up.</p>
+    </section>
+
+    <section class="panel" id="panel" aria-live="polite">
+      <!-- filled by app.js -->
+    </section>
+  </main>
+
+  <footer class="credits">
+    <p><b>Photos (Wikimedia Commons):</b> Alberto-g-rovi, Sala del Mexuar, CC BY 3.0 · José Luiz, Hall of the Ambassadors ceiling, CC BY-SA 3.0 · Heparina1985, Court of the Lions, CC BY-SA 4.0 · José Luis Filpo Cabana, Hall of the Two Sisters dome, CC BY-SA 4.0 · Jebulon, Patio de la Acequia, CC0. Court of the Myrtles photo from the Roadrunners presentation template.</p>
+    <p>A Roadrunners Realty presentation for AP Art History · Sources: UNESCO World Heritage Centre; Patronato de la Alhambra y Generalife; Smarthistory; Irwin, <i>The Alhambra</i> (2004).</p>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
